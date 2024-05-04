@@ -1,0 +1,29 @@
+version: "2.27.0"
+
+services:
+  # Backend API
+  smartbrainserver:
+    container_name: backend
+    build: ./
+    command: bun start
+    working_dir: /usr/src/smartbrainserver
+    environment:
+      POSTGRES_URI: postgres://sally:secret@postgres:5432/smart-brain-docker
+    links:
+      - postgres
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/usr/src/smartbrainserver
+
+  # Postgres
+  postgres:
+    environment:
+      POSTGRES_USER: sally
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: smart-brain-docker
+      POSTGRES_HOST: postgres
+    container_name: postgres
+    build: ./postgres
+    ports:
+      - 5432:5432

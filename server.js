@@ -9,22 +9,15 @@ import handleSignin from "./controllers/signin.js";
 import handleProfileGet from "./controllers/profiles.js";
 import handleImage from "./controllers/image.js";
 
-const port = process.env.PORT
+const port = process.env.PORT;
 
 const db = knex({
   client: "pg",
-  connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-    host: process.env.DATABASE_URL,
-    port: 5432,
-    user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PW,
-    database: process.env.DATABASE_DB,
-  },
+  connection: process.env.POSTGRES_URI,
 });
-const app = express();
+console.log(process.env.POSTGRES_URI);
 
+const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
