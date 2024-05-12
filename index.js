@@ -6,7 +6,10 @@ import "dotenv/config";
 import helmet from "helmet";
 import handleRegister from "./controllers/register.js";
 import handleSignin from "./controllers/signin.js";
-import handleProfileGet from "./controllers/profiles.js";
+import {
+  handleProfileGet,
+  handleProfileUpdate,
+} from "./controllers/profiles.js";
 import handleImage from "./controllers/image.js";
 
 const port = process.env.PORT;
@@ -32,6 +35,9 @@ app.post("/register", (req, res) => {
 
 app.get("/profile/:id", (req, res) => {
   handleProfileGet(req, res, db);
+});
+app.post("/profile/:id", (req, res) => {
+  handleProfileUpdate(req, res, db);
 });
 
 app.put("/image", (req, res) => {
