@@ -5,7 +5,7 @@ import knex from "knex";
 import "dotenv/config";
 import helmet from "helmet";
 import handleRegister from "./controllers/register.js";
-import handleSignin from "./controllers/signin.js";
+import signinAuthentication from "./controllers/signin.js";
 import {
   handleProfileGet,
   handleProfileUpdate,
@@ -20,14 +20,12 @@ const db = knex({
 });
 
 const app = express();
-app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
 
-app.post("/signin", (req, res) => {
-  handleSignin(req, res, db, bcrypt);
-});
+app.post("/signin", signinAuthentication(db, bcrypt));
 
 app.post("/register", (req, res) => {
   handleRegister(req, res, db, bcrypt);
