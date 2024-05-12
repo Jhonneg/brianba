@@ -1,21 +1,21 @@
 import jwt from "jsonwebtoken";
 import { createClient } from "redis";
 
-const redisClient = await createClient({
+const redisClient = createClient({
   url: process.env.REDIS_URI,
 });
 redisClient.on("error", (err) => console.log("Redis Client Error", err));
 await redisClient.connect();
 
-const signToken = (username) => {
+function signToken(username) {
   const jwtPayload = { username };
   return jwt.sign(jwtPayload, "JWT_SECRET_KEY", { expiresIn: "2 days" });
-};
+}
 function setToken(key, value) {
   return Promise.resolve(redisClient.set(key, value));
 }
 
-const createSession = (user) => {
+function createSession(user) {
   const { email, id } = user;
   const token = signToken(email);
   return setToken(token, id)
@@ -23,7 +23,7 @@ const createSession = (user) => {
       return { success: "true", userId: id, token, user };
     })
     .catch(console.log);
-};
+}
 
 const handleSignin = (db, bcrypt, req, res) => {
   const { email, password } = req.body;
@@ -49,10 +49,15 @@ const handleSignin = (db, bcrypt, req, res) => {
     })
     .catch((err) => err);
 };
-
-const getAuthTokenId = (req, res) => {
-  console.log("auth ok");
-};
+function getAuthTokenId(req, res) {
+  const { authorization } = req.headers;
+  return redisClient.get(authorization, (err, reply) => {
+    if (err || !reply) {
+      return res.status(401).send("Unauthorized");
+    }
+    return res.json({ id: reply });
+  });
+}
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
   const { authorization } = req.headers;
