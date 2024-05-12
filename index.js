@@ -15,7 +15,6 @@ const db = knex({
   client: "pg",
   connection: process.env.POSTGRES_URI,
 });
-console.log(process.env.POSTGRES_URI);
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
